@@ -10,10 +10,10 @@
 #===============================================================================
 
 # pipeline directory
-PIPELINE=/DATA/233/hli/ATPP
+PIPELINE=/DATA/233/hli/ATPP_test
 
 # ROI directory which contains ROI files, e.g., Amyg_L.nii
-ROI_DIR=/DATA/233/hli/BA_fs/ROI_1mm
+ROI_DIR=/DATA/233/hli/BA_fs/ROI/1mm
 
 # Left ROI in MNI space, nii format 
 ROI_L=${WD}/ROI/${PART}_L.nii
@@ -32,7 +32,7 @@ POOLSIZE=7
 # a step will NOT run if its number is NOT in the following array
 # 0 -- generate the working directory, NEED to modify
 # 1 -- ROI registration, from MNI space to DTI space, using spm batch
-SWITCH=(3 4 5 6)
+SWITCH=(5)
 
 # switch for processing left hemisphere, 1--yes, 0--no
 LEFT=1
@@ -48,7 +48,7 @@ RIGHT=1
 SPM=/DATA/233/hli/toolbox/spm8
 
 # 1_ROI_registration_spm, 6_ROI_toMNI_spm, template image
-TEMPLATE=${DATA_DIR}/HCP40_MNI_1mm.nii
+TEMPLATE=${DATA_DIR}/HCP40_MNI_1.25mm.nii
 
 # 2_ROI_calc_coord, NIFTI toolbox directory
 NIFTI=/DATA/233/hli/toolbox
@@ -56,8 +56,8 @@ NIFTI=/DATA/233/hli/toolbox
 # 3_ROI_probtrackx, Number of samples, default 5000
 N_SAMPLES=5000
 
-# 3_ROI_probtrackx, distance correction, 1--yes, 0--no
-DIS_COR=1
+# 3_ROI_probtrackx, 14_subregion_probtrackx, distance correction, yes--(--pd), no--( )space
+DIS_COR=--pd
 
 # 3_ROI_probtrackx, the length of each step, default 0.5 mm
 LEN_STEP=0.5
@@ -78,17 +78,23 @@ DOWN_SIZE=5
 METHOD=Sc
 
 # 6_ROI_toMNI_spm, new voxel size, default 1*1*1
-VOX_SIZE=1
+VOX_SIZE=1.25
 
 # 7_group_refer, group threshold, default 0.5
-GROUP_THRES=0.5
+GROUP_THRES=0.25
 
 # 9_calc_mpm, mpm threshold, default 0.5
-MPM_THRES=0.5
+MPM_THRES=0.25
 
-# 16_cross_validation, the number of iteration, default 20
+# 11_validation, the number of iteration, default 20
 N_ITER=100
 
+# 15_probtrackx_toMNI, the p value threshold
+P=0.0004
+
+# 16_probtrackx_pm, the threshold
+PM_THRES=0.25
+ 
 
 
 #===============================================================================

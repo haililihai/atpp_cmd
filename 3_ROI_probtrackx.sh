@@ -33,11 +33,6 @@ else
 	mkdir -p ${WD}/qsub_jobdone
 fi
 
-if [ "${DIS_COR}" == "1" ];then
-	DIS_COR=--pd
-else
-	DIS_COR= 
-fi
 
 for sub in $(cat ${SUB_LIST})
 do

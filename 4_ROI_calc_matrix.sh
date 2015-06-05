@@ -23,4 +23,5 @@ LEFT=$1
 shift
 RIGHT=$1
 
+
 matlab -nodisplay -nosplash -r "addpath('${PIPELINE}');addpath('${NIFTI}');ROI_calc_matrix('${WD}','${PREFIX}','${PART}','${SUB_LIST}',${POOLSIZE},${VAL_THRES},${DOWN_SIZE},${LEFT},${RIGHT});exit"

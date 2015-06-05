@@ -1,28 +1,21 @@
 
 function f_Create_Matrix_v3_new(imgfolder,outfolder,coord,threshold,...
     resampflag,NewVoxSize,method)
-%-------------------------����Ϊ�����ò���---------------------------------%
+%-------------------------------------------------------------------------%
 %
-% imgfolder * - ����ͼ����Ŀ¼���ڷ�ͼ���ļ���Ϊ prename_x_y_z.imgtype
-% outfolder   - ��ɾ������Ŀ¼��
-% threshold   - ������ؾ���ʱ����l�Ӿ���ȡ����ֵ
-% resampflag  - �ز����ʾλ�� 0 �����ز���  1���ز���
-% NewVoxSize  - �ز����ͼ��ֱ���
+% imgfolder * - prename_x_y_z.imgtype
+% outfolder   - output directory
+% threshold   - threshold probtrackx result
+% resampflag  - 0-no, 1-yes
+% NewVoxSize  - Voxel size of resampled images
 % method      -	1, 2, or 3
 %               1:  for Trilinear interpolation
 %               2:  for Nearest Neighbor interpolation
 %               3:  for Fischer's Bresenham interpolation
 %               'method' is 1 if it is default or empty.
 %      
-% imgfolder = './tracking_data/'; 
-% outfolder = './matrix/';
-% threshold = 10;
-% resampflag = 1; 
-% NewVoxSize = [4,4,4];
-% method = 1;
 %-------------------------------------------------------------------------%
 
-%--Ĭ�ϲ���--
 if nargin < 6 , method =1 ;  
 if nargin < 5 , NewVoxSize = [5,5,5];
 if nargin < 4 , resampflag = 0;
@@ -38,7 +31,7 @@ if outfolder(end) ~= '/' && outfolder(end) ~= '\',
 end;
 imgtype = 'nii.gz';  %modified by Hai Li, 2013.12.5
  
-%--��ʼ��--
+
 filedir = dir(strcat(imgfolder,'*_*_*.',imgtype));
 nimg = length(filedir);
 if nimg<1
@@ -55,7 +48,7 @@ else
     con_matrix=sparse(nimg,size(timg,1)*size(timg,2)*size(timg,3));
 end
 
-%--��ȡ����ͼ���ز������l�Ӿ��󣬶�ȡ���--
+
 for iimg = 1:nimg
     fprintf('Process %s ...\n',filedir(iimg).name);
    
@@ -79,7 +72,7 @@ for iimg = 1:nimg
     end
 end
 
-%--ȥ��ȫ����--
+
 fprintf('Remove 0 or NaN columns ...\n');
 con_matrix(isnan(con_matrix) | isinf(con_matrix)) = 0;
 d = ~(max(con_matrix) == 0 & min(con_matrix) == 0);
@@ -89,20 +82,20 @@ con_matrix = full(con_matrix);
 
 if ~exist(outfolder) mkdir(outfolder);end;
 
-%--����l�Ӿ���--
+
 fprintf('Create connection_matrix...\n');
 matrix = con_matrix;
 output = strcat(outfolder,'connection_matrix.mat');
-save(output,'matrix','xyz','-v7.3');  % -v7.3 can save file larger than 2GB
+save(output,'matrix','xyz');
 clear matrix;
 
-%--�����ؾ���,��ֵthreshold--
+
 fprintf('Create correlation_matrix...\n');
 con_matrix(con_matrix < threshold )=0; 
 cor_matrix = con_matrix*con_matrix';
 matrix = cor_matrix;
 output = strcat(outfolder,'correlation_matrix.mat');
-save(output,'matrix','xyz','-v7.3');
+save(output,'matrix','xyz');
 clear matrix;
 
 %% =========================================================== %%

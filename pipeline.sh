@@ -5,26 +5,19 @@
 # 2014.7.13 by Hai Li
 
 PIPELINE=$1
-shift
-WD=$1
-shift
-DATA_DIR=$1
-shift
-PREFIX=$1
-shift
-PART=$1
-shift
-SUB_LIST=$1
-shift
-MAX_CL_NUM=$1
-shift
-CL_NUM=$1
+WD=$2 
+DATA_DIR=$3
+PREFIX=$4
+PART=$5
+SUB_LIST=$6
+MAX_CL_NUM=$7
+CL_NUM=$8
 
 # fetch the variables
 source ${PIPELINE}/config.sh
 
 # show the host
-echo "!!! ${PART}_${CL_NUM}@$(hostname)__$(date +%F_%T) !!!" |tee -a ${WD}/log/progress_check.txt
+echo "!!! ${PART}@$(hostname)__$(date +%F_%T) !!!" |tee -a ${WD}/log/progress_check.txt
 
 
 #===============================================================================
@@ -50,7 +43,7 @@ fi
 if [[ ${SWITCH[@]/_1_/} != ${SWITCH[@]} ]]; then
 echo "$(date +%T)  === 1_ROI_registration_spm start! ===" |tee -a ${WD}/log/progress_check.txt
 T="$(date +%s)"
-${PIPELINE}/1_ROI_registration_spm.sh ${PIPELINE} ${WD} ${DATA_DIR} ${PREFIX} ${PART} ${SUB_LIST} ${POOLSIZE} ${SPM} ${TEMPLATE}  ${LEFT} ${ROI_L} ${RIGHT} ${ROI_R}
+${PIPELINE}/1_ROI_registration_spm.sh ${PIPELINE} ${WD} ${PREFIX} ${PART} ${SUB_LIST} ${POOLSIZE} ${SPM} ${TEMPLATE}  ${LEFT} ${ROI_L} ${RIGHT} ${ROI_R}
 T="$(($(date +%s)-T))"
 echo "$(date +%T)  === 1_ROI_registration_spm done! ===" |tee -a ${WD}/log/progress_check.txt
 printf "Time elapsed: %02d:%02d:%02d:%02d\n\n" "$((T/86400))" "$((T/3600%24))" "$((T/60%60))" "$((T%60))" |tee -a ${WD}/log/progress_check.txt
@@ -93,7 +86,7 @@ fi
 if [[ ${SWITCH[@]/_5_/} != ${SWITCH[@]} ]]; then
 echo "$(date +%T)  === 5_ROI_parcellation start! ===" |tee -a ${WD}/log/progress_check.txt
 T="$(date +%s)"
-${PIPELINE}/5_ROI_parcellation.sh ${PIPELINE} ${WD} ${PREFIX} ${PART} ${SUB_LIST} ${MAX_CL_NUM} ${NIFTI} ${POOLSIZE} ${METHOD} ${LEFT} ${RIGHT}
+${PIPELINE}/5_ROI_parcellation.sh ${PIPELINE} ${WD} ${PREFIX} ${PART} ${SUB_LIST} ${MAX_CL_NUM} ${POOLSIZE} ${METHOD} ${LEFT} ${RIGHT}
 T="$(($(date +%s)-T))"
 echo "$(date +%T)  === 5_ROI_parcellation done! ===" |tee -a ${WD}/log/progress_check.txt
 printf "Time elapsed: %02d:%02d:%02d:%02d\n\n" "$((T/86400))" "$((T/3600%24))" "$((T/60%60))" "$((T%60))" |tee -a ${WD}/log/progress_check.txt
@@ -103,7 +96,7 @@ fi
 if [[ ${SWITCH[@]/_6_/} != ${SWITCH[@]} ]]; then
 echo "$(date +%T)  === 6_ROI_toMNI_spm start! ===" |tee -a ${WD}/log/progress_check.txt
 T="$(date +%s)"
-${PIPELINE}/6_ROI_toMNI_spm.sh ${PIPELINE} ${WD} ${DATA_DIR} ${PREFIX} ${PART} ${SUB_LIST} ${MAX_CL_NUM} ${SPM} ${POOLSIZE} ${TEMPLATE} ${VOX_SIZE} ${METHOD} ${LEFT} ${RIGHT}
+${PIPELINE}/6_ROI_toMNI_spm.sh ${PIPELINE} ${WD} ${PREFIX} ${PART} ${SUB_LIST} ${MAX_CL_NUM} ${SPM} ${POOLSIZE} ${TEMPLATE} ${VOX_SIZE} ${METHOD} ${LEFT} ${RIGHT}
 T="$(($(date +%s)-T))"
 echo "$(date +%T)  === 6_ROI_toMNI_spm done! ===" |tee -a ${WD}/log/progress_check.txt
 printf "Time elapsed: %02d:%02d:%02d:%02d\n\n" "$((T/86400))" "$((T/3600%24))" "$((T/60%60))" "$((T%60))" |tee -a ${WD}/log/progress_check.txt
@@ -115,7 +108,7 @@ fi
 if [[ ${SWITCH[@]/_7_/} != ${SWITCH[@]} ]]; then
 echo "$(date +%T)  === 7_ROI_group_refer start! ===" |tee -a ${WD}/log/progress_check.txt
 T="$(date +%s)"
-${PIPELINE}/7_ROI_group_refer.sh ${PIPELINE} ${WD} ${PREFIX} ${PART} ${SUB_LIST} ${CL_NUM} ${NIFTI} ${METHOD} ${GROUP_THRES} ${LEFT} ${RIGHT}
+${PIPELINE}/7_ROI_group_refer.sh ${PIPELINE} ${WD} ${PREFIX} ${PART} ${SUB_LIST} ${MAX_CL_NUM} ${NIFTI} ${METHOD} ${VOX_SIZE} ${GROUP_THRES} ${LEFT} ${RIGHT}
 T="$(($(date +%s)-T))"
 echo "$(date +%T)  === 7_ROI_group_refer done! ===" |tee -a ${WD}/log/progress_check.txt
 printf "Time elapsed: %02d:%02d:%02d:%02d\n\n" "$((T/86400))" "$((T/3600%24))" "$((T/60%60))" "$((T%60))" |tee -a ${WD}/log/progress_check.txt
@@ -125,7 +118,7 @@ fi
 if [[ ${SWITCH[@]/_8_/} != ${SWITCH[@]} ]]; then
 echo "$(date +%T)  === 8_cluster_relabel start! ===" |tee -a ${WD}/log/progress_check.txt
 T="$(date +%s)"
-${PIPELINE}/8_cluster_relabel.sh ${PIPELINE} ${WD} ${PREFIX} ${PART} ${SUB_LIST} ${CL_NUM} ${NIFTI} ${POOLSIZE} ${GROUP_THRES} ${METHOD} ${LEFT} ${RIGHT}
+${PIPELINE}/8_cluster_relabel.sh ${PIPELINE} ${WD} ${PREFIX} ${PART} ${SUB_LIST} ${MAX_CL_NUM} ${NIFTI} ${POOLSIZE} ${GROUP_THRES} ${METHOD} ${VOX_SIZE} ${LEFT} ${RIGHT}
 T="$(($(date +%s)-T))"
 echo "$(date +%T)  === 8_cluster_relabel done! ===" |tee -a ${WD}/log/progress_check.txt
 printf "Time elapsed: %02d:%02d:%02d:%02d\n\n" "$((T/86400))" "$((T/3600%24))" "$((T/60%60))" "$((T%60))" |tee -a ${WD}/log/progress_check.txt
@@ -136,7 +129,7 @@ fi
 if [[ ${SWITCH[@]/_9_/} != ${SWITCH[@]} ]]; then
 echo "$(date +%T)  === 9_calc_mpm start! ==="  |tee -a ${WD}/log/progress_check.txt
 T="$(date +%s)"
-${PIPELINE}/9_calc_mpm.sh ${PIPELINE} ${WD} ${PREFIX} ${PART} ${SUB_LIST} ${CL_NUM} ${NIFTI} ${METHOD} ${MPM_THRES} ${LEFT} ${RIGHT}
+${PIPELINE}/9_calc_mpm.sh ${PIPELINE} ${WD} ${PREFIX} ${PART} ${SUB_LIST} ${MAX_CL_NUM} ${NIFTI} ${METHOD} ${MPM_THRES} ${VOX_SIZE} ${LEFT} ${RIGHT}
 T="$(($(date +%s)-T))"
 echo "$(date +%T)  === 9_calc_mpm done! ===" |tee -a ${WD}/log/progress_check.txt
 printf "Time elapsed: %02d:%02d:%02d:%02d\n\n" "$((T/86400))" "$((T/3600%24))" "$((T/60%60))" "$((T%60))" |tee -a ${WD}/log/progress_check.txt
@@ -146,29 +139,70 @@ fi
 if [[ ${SWITCH[@]/_10_/} != ${SWITCH[@]} ]]; then
 echo "$(date +%T)  === 10_postprocess_mpm start! ===" |tee -a ${WD}/log/progress_check.txt
 T="$(date +%s)"
-${PIPELINE}/10_postprocess_mpm.sh ${PIPELINE} ${WD} ${PART} ${CL_NUM} ${NIFTI} ${MPM_THRES} ${LEFT} ${RIGHT}
+${PIPELINE}/10_postprocess_mpm.sh ${PIPELINE} ${WD} ${PART} ${SUB_LIST} ${MAX_CL_NUM} ${NIFTI} ${MPM_THRES} ${VOX_SIZE} ${LEFT} ${RIGHT}
 T="$(($(date +%s)-T))"
 echo "$(date +%T)  === 10_postprocess_mpm done! ===" |tee -a ${WD}/log/progress_check.txt
 printf "Time elapsed: %02d:%02d:%02d:%02d\n\n" "$((T/86400))" "$((T/3600%24))" "$((T/60%60))" "$((T%60))" |tee -a ${WD}/log/progress_check.txt
 fi
 
-# 16) cross validation
-if [[ ${SWITCH[@]/_16_/} != ${SWITCH[@]} ]]; then
-echo "$(date +%T)  === 16_cross_validation start! ===" |tee -a ${WD}/log/progress_check.txt
+# 11) validation
+if [[ ${SWITCH[@]/_11_/} != ${SWITCH[@]} ]]; then
+echo "$(date +%T)  === 11_validation start! ===" |tee -a ${WD}/log/progress_check.txt
 T="$(date +%s)"
-${PIPELINE}/16_cross_validation.sh ${PIPELINE} ${WD} ${PREFIX} ${PART} ${SUB_LIST} ${MAX_CL_NUM} ${N_ITER} ${GROUP_THRES} ${MPM_THRES} ${LEFT} ${RIGHT}
+${PIPELINE}/11_validation.sh ${PIPELINE} ${WD} ${PREFIX} ${PART} ${SUB_LIST} ${METHOD} ${VOX_SIZE} ${MAX_CL_NUM} ${N_ITER} ${MPM_THRES} ${LEFT} ${RIGHT}
 T="$(($(date +%s)-T))"
-echo "$(date +%T)  === 16_cross_validation done! ===" |tee -a ${WD}/log/progress_check.txt
+echo "$(date +%T)  === 11_validation done! ===" |tee -a ${WD}/log/progress_check.txt
 printf "Time elapsed: %02d:%02d:%02d:%02d\n\n" "$((T/86400))" "$((T/3600%24))" "$((T/60%60))" "$((T%60))" |tee -a ${WD}/log/progress_check.txt
 fi
 
-# 17) plot indice
-if [[ ${SWITCH[@]/_17_/} != ${SWITCH[@]} ]]; then
-echo "$(date +%T)  === 17_indice_plot start! ===" |tee -a ${WD}/log/progress_check.txt
+# 12) plot indice
+if [[ ${SWITCH[@]/_12_/} != ${SWITCH[@]} ]]; then
+echo "$(date +%T)  === 12_indice_plot start! ===" |tee -a ${WD}/log/progress_check.txt
 T="$(date +%s)"
-${PIPELINE}/17_indice_plot.sh ${PIPELINE} ${WD} ${PART} ${MAX_CL_NUM}
+${PIPELINE}/12_indice_plot.sh ${PIPELINE} ${WD} ${PART} ${SUB_LIST} ${VOX_SIZE} ${MAX_CL_NUM} ${LEFT} ${RIGHT}
 T="$(($(date +%s)-T))"
-echo "$(date +%T)  === 17_indice_plot done! ===" |tee -a ${WD}/log/progress_check.txt
+echo "$(date +%T)  === 12_indice_plot done! ===" |tee -a ${WD}/log/progress_check.txt
+printf "Time elapsed: %02d:%02d:%02d:%02d\n\n" "$((T/86400))" "$((T/3600%24))" "$((T/60%60))" "$((T%60))" |tee -a ${WD}/log/progress_check.txt
+fi
+
+# 13) transform subregions from MNI space to DTI space
+if [[ ${SWITCH[@]/_13_/} != ${SWITCH[@]} ]]; then
+echo "$(date +%T)  === 13_subregion_toDTI_spm start! ===" |tee -a ${WD}/log/progress_check.txt
+T="$(date +%s)"
+${PIPELINE}/13_subregion_toDTI_spm.sh ${PIPELINE} ${WD} ${PART} ${SUB_LIST} ${CL_NUM} ${TEMPLATE} ${VOX_SIZE} ${MPM_THRES} ${POOLSIZE} ${SPM} ${LEFT} ${RIGHT}
+T="$(($(date +%s)-T))"
+echo "$(date +%T)  === 13_subregion_toDTI_spm done! ===" |tee -a ${WD}/log/progress_check.txt
+printf "Time elapsed: %02d:%02d:%02d:%02d\n\n" "$((T/86400))" "$((T/3600%24))" "$((T/60%60))" "$((T%60))" |tee -a ${WD}/log/progress_check.txt
+fi
+
+# 14) generate probabilistic tractography for each subregion
+#    default 5000 samples for each voxel, WITHOUT distance correction
+if [[ ${SWITCH[@]/_14_/} != ${SWITCH[@]} ]]; then
+echo "$(date +%T)  === 14_subregion_probtrack start! ===" |tee -a ${WD}/log/progress_check.txt
+T="$(date +%s)"
+${PIPELINE}/14_subregion_probtrackx.sh ${WD} ${DATA_DIR} ${PART} ${SUB_LIST} ${CL_NUM} ${VOX_SIZE} ${MPM_THRES} ${N_SAMPLES} ${DIS_COR} ${LEN_STEP} ${N_STEPS} ${CUR_THRES} ${LEFT} ${RIGHT}
+T="$(($(date +%s)-T))"
+echo "$(date +%T)  === 14_subregion_probtrackx done! ===" |tee -a ${WD}/log/progress_check.txt
+printf "Time elapsed: %02d:%02d:%02d:%02d\n\n" "$((T/86400))" "$((T/3600%24))" "$((T/60%60))" "$((T%60))" |tee -a ${WD}/log/progress_check.txt
+fi
+
+# 15) transform probtrackxs from DTI space to MNI space
+if [[ ${SWITCH[@]/_15_/} != ${SWITCH[@]} ]]; then
+echo "$(date +%T)  === 15_probtrackx_toMNI_spm start! ===" |tee -a ${WD}/log/progress_check.txt
+T="$(date +%s)"
+${PIPELINE}/13_probtrackx_toMNI_spm.sh ${PIPELINE} ${WD} ${PART} ${SUB_LIST} ${CL_NUM} ${TEMPLATE} ${VOX_SIZE} ${MPM_THRES} ${N_SAMPLES} ${P} ${POOLSIZE} ${SPM} ${LEFT} ${RIGHT}
+T="$(($(date +%s)-T))"
+echo "$(date +%T)  === 15_probtrackx_toMNI_spm done! ===" |tee -a ${WD}/log/progress_check.txt
+printf "Time elapsed: %02d:%02d:%02d:%02d\n\n" "$((T/86400))" "$((T/3600%24))" "$((T/60%60))" "$((T%60))" |tee -a ${WD}/log/progress_check.txt
+fi
+
+# 16) generate the probabilistic maps of probtrackxs
+if [[ ${SWITCH[@]/_16_/} != ${SWITCH[@]} ]]; then
+echo "$(date +%T)  === 16_probtrackx_pm start! ===" |tee -a ${WD}/log/progress_check.txt
+T="$(date +%s)"
+${PIPELINE}/16_probtrackx_pm.sh ${WD} ${PART} ${SUB_LIST} ${CL_NUM} ${PM_THRES} ${LEFT} ${RIGHT}
+T="$(($(date +%s)-T))"
+echo "$(date +%T)  === 16_probtrackx_pm done! ===" |tee -a ${WD}/log/progress_check.txt
 printf "Time elapsed: %02d:%02d:%02d:%02d\n\n" "$((T/86400))" "$((T/3600%24))" "$((T/60%60))" "$((T%60))" |tee -a ${WD}/log/progress_check.txt
 fi
 

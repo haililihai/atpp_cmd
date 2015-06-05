@@ -1,12 +1,6 @@
 function [nminfo,minfo,vi]=my_nmi(x,y)
-%computethe normalized mutual information for verctor x and y
-% clear all
-% vnii=load_untouch_nii('new2/NC001_seg4_lin_new2.nii');
-% image1=vnii.img;
-% x=image1;
-% vnii=load_untouch_nii('new2/NC006_seg4_lin_new2.nii');
-% image2=vnii.img;
-% y=image2;
+%computethe normalized mutual information and variation of information for verctor x and y
+
 
 addpath('/DATA/233/hli/toolbox');
 
@@ -35,17 +29,17 @@ py=py/sum(y>0);
 ex=0;
 ey=0;
 for i=1:count
-    if isinf(log(px(i)))
+    if isinf(log2(px(i)))
         logpx=-0.000001;
     else
-        logpx=log(px(i));
+        logpx=log2(px(i)); %log2
     end
     ex=ex+px(i)*logpx;
     
-    if isinf(log(py(i)))
+    if isinf(log2(py(i)))
         logpy=-0.000001;
     else
-        logpy=log(py(i));
+        logpy=log2(py(i));
     end
     ey=ey+py(i)*logpy;
 end
@@ -57,10 +51,10 @@ ey=-ey;
 exy=0;
 for i=1:size(pxy,1)
     for j=1:size(pxy,2)
-       if isinf(log(pxy(i,j)))
+       if isinf(log2(pxy(i,j)))
           logpxy=-0.000001;
        else
-         logpxy=log(pxy(i,j));
+         logpxy=log2(pxy(i,j));
        end
          exy=exy+pxy(i,j)*logpxy;
     end
@@ -69,6 +63,6 @@ exy=-exy;
 
 %compute the mutual information for x,y
 minfo=ex+ey-exy;
-nminfo=minfo/min(ex,ey);
-vi=ex+ey-2*minfo;
-  vi=vi/(ex+ey-minfo);
+nminfo=2*minfo/(ex+ey);  % normalized (ex+ey)/2 is a tight upper bound on minfo 
+vi=ex+ey-2*minfo; % non-normalized
+%  vi=vi/(ex+ey-minfo);

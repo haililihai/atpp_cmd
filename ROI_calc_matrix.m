@@ -23,9 +23,7 @@ parfor i = 1:length(SUB);
 	imgfolder_L = strcat(PWD,'/',SUB{i},'/',PREFIX,'_',SUB{i},'_',PART,'_L_probtrackx');
 	outfolder_L = strcat(PWD,'/',SUB{i},'/',PREFIX,'_',SUB{i},'_',PART,'_L_matrix/');
 	if ~exist(outfolder_L) mkdir(outfolder_L);end
-	fprintf('Process %s_L\n',SUB{i});
  	f_Create_Matrix_v3_new(imgfolder_L,outfolder_L,coord_L,threshold,resampflag,NewVoxSize,method);
-	fprintf('%s_L Done!\n',SUB{i});
 	end
 
 	if RIGHT == 1
@@ -33,9 +31,7 @@ parfor i = 1:length(SUB);
 	imgfolder_R = strcat(PWD,'/',SUB{i},'/',PREFIX,'_',SUB{i},'_',PART,'_R_probtrackx');
 	outfolder_R = strcat(PWD,'/',SUB{i},'/',PREFIX,'_',SUB{i},'_',PART,'_R_matrix/');
 	if ~exist(outfolder_R) mkdir(outfolder_R);end
-	fprintf('Process %s_R\n',SUB{i});
 	f_Create_Matrix_v3_new(imgfolder_R,outfolder_R,coord_R,threshold,resampflag,NewVoxSize,method);
-	fprintf('%s_R Done!\n',SUB{i});
 	end
 
 end

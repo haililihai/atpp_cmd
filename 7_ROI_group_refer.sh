@@ -10,11 +10,13 @@ PART=$1
 shift
 SUB_LIST=$1
 shift
-CL_NUM=$1
+MAX_CL_NUM=$1
 shift
 NIFTI=$1
 shift
 METHOD=$1
+shift
+VOX_SIZE=$1
 shift
 GROUP_THRES=$1
 shift
@@ -23,17 +25,17 @@ shift
 RIGHT=$1
 
 
-if [ "${LEFT}" == "1" -a "${RIGHT}" == "0" ]
+if [ "${LEFT}" == "1" ] && [ "${RIGHT}" == "0" ]
 then
-	matlab -nodisplay -nosplash -r "addpath('${PIPELINE}');addpath('${NIFTI}');ROI_group_refer('${WD}','${PREFIX}','${PART}','${SUB_LIST}',${CL_NUM},'${METHOD}',${GROUP_THRES},1);exit" &
+	matlab -nodisplay -nosplash -r "addpath('${PIPELINE}');addpath('${NIFTI}');ROI_group_refer_xmm('${WD}','${PREFIX}','${PART}','${SUB_LIST}',${MAX_CL_NUM},'${METHOD}',${VOX_SIZE},${GROUP_THRES},1);exit" &
 	wait
-elif [ "${LEFT}" == "0" -a "${RIGHT}" == "1" ]
+elif [ "${LEFT}" == "0" ] && [ "${RIGHT}" == "1" ]
 then
-	matlab -nodisplay -nosplash -r "addpath('${PIPELINE}');addpath('${NIFTI}');ROI_group_refer('${WD}','${PREFIX}','${PART}','${SUB_LIST}',${CL_NUM},'${METHOD}',${GROUP_THRES},0);exit" &
+	matlab -nodisplay -nosplash -r "addpath('${PIPELINE}');addpath('${NIFTI}');ROI_group_refer_xmm('${WD}','${PREFIX}','${PART}','${SUB_LIST}',${MAX_CL_NUM},'${METHOD}',${VOX_SIZE},${GROUP_THRES},0);exit" &
 	wait
-elif [ "${LEFT}" == "1" -a "${RIGHT}" == "1" ]
+elif [ "${LEFT}" == "1" ] && [  "${RIGHT}" == "1" ]
 then
-	matlab -nodisplay -nosplash -r "addpath('${PIPELINE}');addpath('${NIFTI}');ROI_group_refer('${WD}','${PREFIX}','${PART}','${SUB_LIST}',${CL_NUM},'${METHOD}',${GROUP_THRES},1);exit" &
-	matlab -nodisplay -nosplash -r "addpath('${PIPELINE}');addpath('${NIFTI}');ROI_group_refer('${WD}','${PREFIX}','${PART}','${SUB_LIST}',${CL_NUM},'${METHOD}',${GROUP_THRES},0);exit" &
+	matlab -nodisplay -nosplash -r "addpath('${PIPELINE}');addpath('${NIFTI}');ROI_group_refer_xmm('${WD}','${PREFIX}','${PART}','${SUB_LIST}',${MAX_CL_NUM},'${METHOD}',${VOX_SIZE},${GROUP_THRES},1);exit" &
+	matlab -nodisplay -nosplash -r "addpath('${PIPELINE}');addpath('${NIFTI}');ROI_group_refer_xmm('${WD}','${PREFIX}','${PART}','${SUB_LIST}',${MAX_CL_NUM},'${METHOD}',${VOX_SIZE},${GROUP_THRES},0);exit" &
 	wait
 fi

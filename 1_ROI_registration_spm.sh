@@ -4,8 +4,6 @@ PIPELINE=$1
 shift
 WD=$1
 shift
-DATA_DIR=$1
-shift
 PREFIX=$1
 shift
 PART=$1
@@ -27,7 +25,8 @@ shift
 ROI_R=$1
  
 
-matlab -nodisplay -nosplash -r "addpath('${PIPELINE}');addpath('${SPM}');ROI_registration_spm('${WD}','${DATA_DIR}','${PREFIX}','${PART}','${SUB_LIST}',${POOLSIZE},'${TEMPLATE}',${LEFT},'${ROI_L}',${RIGHT},'${ROI_R}');exit"
+(matlab -nodisplay -nosplash -r "addpath('${PIPELINE}');addpath('${SPM}');ROI_registration_spm('${WD}','${PREFIX}','${PART}','${SUB_LIST}',${POOLSIZE},'${TEMPLATE}',${LEFT},'${ROI_L}',${RIGHT},'${ROI_R}');exit") &
+wait
 
 
 for sub in `cat ${SUB_LIST}`

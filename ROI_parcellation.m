@@ -12,7 +12,7 @@ end
 matlabpool('local',POOLSIZE)
 
 % parfor
-parfor i = 1:length(SUB)
+parfor i = 1:length(SUB);
 	
 % Left
 if LEFT == 1
@@ -28,7 +28,7 @@ if LEFT == 1
 
     nii = load_untouch_nii(strcat(PWD,'/',SUB{i},'/',PREFIX,'_',SUB{i},'_',PART,'_L_DTI.nii.gz'));
     
-	for k=1:N
+	for k=1:N % haili,20150408, k=1:N
 		display(strcat(SUB{i},'_',PART,'_L_',num2str(k+1),' processing...'));
         matrix1 = matrix*matrix';
         matrix1 = matrix1-diag(diag(matrix1));   
@@ -59,7 +59,7 @@ if RIGHT == 1
 
     nii = load_untouch_nii(strcat(PWD,'/',SUB{i},'/',PREFIX,'_',SUB{i},'_',PART,'_R_DTI.nii.gz'));
     
-	for k=1:N
+	for k=1:N % k=1:N
 		display(strcat(SUB{i},'_',PART,'_R_',num2str(k+1),' processing...'));
         matrix1 = matrix*matrix';
         matrix1 = matrix1-diag(diag(matrix1));   

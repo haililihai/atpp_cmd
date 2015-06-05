@@ -8,7 +8,7 @@
 # ---- Simple and easy-to-use settings
 #
 # Usage: sh ATPP.sh batch_list.txt
-# 2014.7.13 V0.9
+# 2015.5.10 V1.1
 # Hai Li (hai.li@nlpr.ia.ac.cn)
 
 
@@ -17,8 +17,8 @@
 # 1) Tools: FSL (with FDT toolbox), SGE and MATLAB (with SPM8 and NIfTI toolbox)
 # 2) Data files:
 #    > T1 image for each subject
-#	 > b0 image for each subject
-# 	 > images preprocessed by FSL(BedpostX) for each subject
+#    > b0 image for each subject
+#    > images preprocessed by FSL(BedpostX) for each subject
 # 3) Directory structure:
 #	  Working_dir
 #     |-- sub1
@@ -56,7 +56,6 @@ test -e $1 && BATCH_LIST=$1 || BATCH_LIST=${PIPELINE}/batch_list.txt
 
 #===============================================================================
 #----------------------------START OF SCRIPT------------------------------------
-#----------NO EDITING BELOW UNLESS YOU KNOW WHAT YOU ARE DOING------------------
 #===============================================================================
 
 while read line
@@ -66,22 +65,22 @@ do
 DATA_DIR=$( echo $line | cut -d ' ' -f1 )
 PREFIX=$( echo $line | cut -d ' ' -f2 )
 SUB_LIST=$( echo $line | cut -d ' ' -f3 )
-PART=$( echo $line | cut -d ' ' -f4 )
-WD=$( echo $line | cut -d ' ' -f5 )
+WD=$( echo $line | cut -d ' ' -f4 )
+PART=$( echo $line | cut -d ' ' -f5 )
 MAX_CL_NUM=$( echo $line | cut -d ' ' -f6 )
 CL_NUM=$( echo $line | cut -d ' ' -f7 )
 
-
-
 # 2. distribute a task to the most available host
-IP=`qhost | awk 'NR>=4 && NR<=13{print $4/$3,$1}' | sort -n | awk 'NR==1{print $2}'`
+IP=`qhost | awk 'NR>=4 && NR<=23 {print $4/$3,$1}' | sort -n | awk 'NR==1{print $2}'`
 
 # 3. do the processing
 mkdir -p ${WD}/log
 echo "============================================================="
-echo "=============== ATPP running... -- ${PART}@${IP} ==============="
+echo "=============== ATPP running... -- ${PART}_${num}@${IP} ==============="
+#ssh mic250 "bash -s " < ${PIPELINE}/pipeline.sh ${PIPELINE} ${WD} ${DATA_DIR} ${PREFIX} ${PART} ${SUB_LIST} ${MAX_CL_NUM} ${CL_NUM} >${WD}/log/ATPP_log_$(date +%m-%d_%H-%M).txt 2>&1 &
 ssh ${IP} "bash -s " < ${PIPELINE}/pipeline.sh ${PIPELINE} ${WD} ${DATA_DIR} ${PREFIX} ${PART} ${SUB_LIST} ${MAX_CL_NUM} ${CL_NUM} >${WD}/log/ATPP_log_$(date +%m-%d_%H-%M).txt 2>&1 &
+#echo ${PIPELINE}/pipeline.sh ${PIPELINE} ${WD} ${DATA_DIR} ${PREFIX} ${PART} ${SUB_LIST} ${MAX_CL_NUM} ${CL_NUM} >${WD}/log/ATPP_log_$(date +%m-%d_%H-%M).txt 2>&1 &
 echo "==== Processing info @ ${WD}/log/ATPP_log_$(date +%m-%d_%H-%M).txt ====" 
-sleep 15s # waiting for a proper host
+sleep 20s # waiting for a proper host
 
 done < ${BATCH_LIST}
