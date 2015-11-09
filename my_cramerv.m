@@ -3,7 +3,7 @@ function [es,esCi,chi2]=my_cramerv(table,confLevel)
 % ** NOTE: in the case of 2 by 2 tables Cramer's V is identical to phi
 % except possibly for the sign), which will be taken care of in the last
 % lines
-addpath('/DATA/233/hli/toolbox/EffectSizeToolbox');
+%addpath('EffectSizeToolbox/');
 CONF=0.95;
 if ~exist('confLevel','var') | isempty(confLevel)
     confLevel=CONF;

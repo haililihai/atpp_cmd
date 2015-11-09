@@ -14,18 +14,18 @@ function mpm_cluster=cluster_mpm_validation(PWD,PREFIX,PART,SUB,METHOD,VOX_SIZE,
     	MPM_THRES=0.25;
 	end
 
-	vnii_ref=load_untouch_nii(strcat(PWD,'/',sub{1},'/',PREFIX,'_',sub{1},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii'));
+	vnii_ref=load_untouch_nii(strcat(PWD,'/',sub{1},'/',PREFIX,'_',sub{1},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii.gz'));
 	ref_img=vnii_ref.img;
 	IMGSIZE=size(ref_img);
 	sumimg=zeros(IMGSIZE);
 
 	prob_cluster=zeros([IMGSIZE,kc]);
 	for subi=1:sub_num
-		sub_file=strcat(PWD,'/',sub{subi},'/',PREFIX,'_',sub{subi},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii');
+		sub_file=strcat(PWD,'/',sub{subi},'/',PREFIX,'_',sub{subi},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii.gz');
 		vnii=load_untouch_nii(sub_file);
 		tha_seg_result= vnii.img;   
 		dataimg=vnii.img;
-		data(dataimg>0)=1;
+		dataimg(dataimg>0)=1;
 		sumimg=sumimg+double(dataimg);
 
 	%computing the probabilistic maps

@@ -23,8 +23,8 @@ function postprocess_mpm(PWD,PART,SUB,MAX_CL_NUM,MPM_THRES,VOX_SIZE,LorR)
 
 path = strcat(PWD,'/MPM_',num2str(length(SUB)),'_',num2str(VOX_SIZE),'mm/');
 for CL_NUM=2:MAX_CL_NUM
-if ~exist(strcat(num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(CL_NUM),'_MPM_thr',num2str(MPM_THRES),'_group_smoothed.nii'))
-filename = strcat(num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(CL_NUM),'_MPM_thr',num2str(MPM_THRES),'_group.nii');
+if ~exist(strcat(num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(CL_NUM),'_MPM_thr',num2str(MPM_THRES),'_group_smoothed.nii.gz'))
+filename = strcat(num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(CL_NUM),'_MPM_thr',num2str(MPM_THRES),'_group.nii.gz');
 
 info = load_untouch_nii(strcat(path,filename));
 img = info.img;
@@ -80,7 +80,7 @@ end
 img_MPM = img;
 info = load_untouch_nii(strcat(path,filename));
 info.img = img_MPM;
-output = strcat(num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(CL_NUM),'_MPM_thr',num2str(MPM_THRES),'_group_smoothed.nii');
+output = strcat(num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(CL_NUM),'_MPM_thr',num2str(MPM_THRES),'_group_smoothed.nii.gz');
 save_untouch_nii(info,strcat(path,output));
 
 	disp(strcat(PART,'_',LR,' Done!'));

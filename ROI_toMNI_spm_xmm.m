@@ -1,4 +1,4 @@
-function ROI_toMNI_spm_xmm(WD,DATA_DIR,PREFIX,PART,SUB_LIST,MAX_CL_NUM,POOLSIZE,TEMPLATE,VOX_SIZE,METHOD,LEFT,RIGHT)
+function ROI_toMNI_spm_xmm(WD,PREFIX,PART,SUB_LIST,MAX_CL_NUM,POOLSIZE,TEMPLATE,VOX_SIZE,METHOD,LEFT,RIGHT)
 %-----------------------------------------------------------------------
 % transform ROIs from DTI(b0) space to MNI space
 %-----------------------------------------------------------------------

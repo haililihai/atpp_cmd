@@ -1,43 +1,56 @@
-function validation(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,N_ITER,MPM_THRES,LEFT,RIGHT)
+function validation(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,N_ITER,GROUP_THRES,MPM_THRES,LEFT,RIGHT)
 
 addpath('/DATA/233/hli/toolbox');
 
 % methods
 split_half=1;
-pairwise=1;
+pairwise=0;
 leave_one_out=1;
-group_cont=1;
-indi_cont=1;
-group_hi_vi=1;
-indi_hi_vi=1;
+group_cont=0;
+indi_cont=0;
+group_hi_vi=0;
+indi_hi_vi=0;
+group_silhouette=0;
+indi_silhouette=0;
+group_tpd=0;
+indi_tpd=0;
+
+
+if group_tpd==1
+	validation_group_tpd(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES)
+end
+
+if indi_tpd==1
+	validation_indi_tpd(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES)
+end
 
 if split_half==1
 
     if LEFT==1
-        validation_split_half(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,N_ITER,MPM_THRES,1)
+        validation_split_half(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,N_ITER,GROUP_THRES,MPM_THRES,1)
     end
     if RIGHT==1
-        validation_split_half(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,N_ITER,MPM_THRES,0)
+        validation_split_half(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,N_ITER,GROUP_THRES,MPM_THRES,0)
     end
 end
 
 if leave_one_out==1
 
     if LEFT==1
-        validation_leave_one_out(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,1)
+        validation_leave_one_out(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES,1)
     end
     if RIGHT==1
-        validation_leave_one_out(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,0)
+        validation_leave_one_out(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES,0)
     end
 end
 
 if pairwise==1
 
     if LEFT==1
-        validation_pairwise(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,1)
+        validation_pairwise(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES,1)
     end
     if RIGHT==1
-        validation_pairwise(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,0)
+        validation_pairwise(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES,0)
     end
 end
 
@@ -54,10 +67,10 @@ end
 if indi_cont==1
 
     if LEFT==1
-        validation_indi_cont(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,1)
+        validation_indi_cont(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES,1)
     end
     if RIGHT==1
-        validation_indi_cont(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,0)
+        validation_indi_cont(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES,0)
     end
 end
 
@@ -74,16 +87,36 @@ end
 if indi_hi_vi==1
 
     if LEFT==1
-        validation_indi_hi_vi(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,1)
+        validation_indi_hi_vi(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES,1)
     end
     if RIGHT==1
-        validation_indi_hi_vi(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,0)
+        validation_indi_hi_vi(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES,0)
     end
 end
 
 
-function validation_split_half(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,N_ITER,MPM_THRES,LorR)
+if group_silhouette==1
 
+    if LEFT==1
+        validation_group_silhouette(PWD,PART,SUB_LIST,VOX_SIZE,MAX_CL_NUM,MPM_THRES,1)
+    end
+    if RIGHT==1
+        validation_group_silhouette(PWD,PART,SUB_LIST,VOX_SIZE,MAX_CL_NUM,MPM_THRES,0)
+    end
+end
+
+if indi_silhouette==1
+
+    if LEFT==1
+        validation_indi_silhouette(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,1)
+    end
+    if RIGHT==1
+        validation_indi_silhouette(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,0)
+    end
+end
+
+
+function validation_split_half(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,N_ITER,GROUP_THRES,MPM_THRES,LorR)
     if LorR == 1
         LR='L';
     elseif LorR == 0
@@ -100,6 +133,11 @@ function validation_split_half(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_N
         MPM_THRES=0.25;
     end
 
+    GROUP_THRES=GROUP_THRES*100;
+    MASK_FILE=strcat(PWD,'/group_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_',LR,'_roimask_thr',num2str(GROUP_THRES),'.nii');  
+    MASK_NII=load_untouch_nii(MASK_FILE);                                                                                                 
+    MASK=double(MASK_NII.img); 
+
     N=N_ITER;
     n1=floor(sub_num/2);
     dice=zeros(N,2,MAX_CL_NUM);
@@ -107,6 +145,7 @@ function validation_split_half(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_N
     vi=zeros(N,MAX_CL_NUM);
     cv=zeros(N,1,MAX_CL_NUM);
     for kc=2:MAX_CL_NUM
+	display(sprintf('split_half_cluster_%d',kc));
         list1_sub={};
         list2_sub={};
         for ti=1:N
@@ -115,6 +154,8 @@ function validation_split_half(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_N
             list2_sub={sub{tmp(n1+1:sub_num)}}';
             mpm_cluster1=cluster_mpm_validation(PWD,PREFIX,PART,list1_sub,METHOD,VOX_SIZE,kc,MPM_THRES,LorR);
             mpm_cluster2=cluster_mpm_validation(PWD,PREFIX,PART,list2_sub,METHOD,VOX_SIZE,kc,MPM_THRES,LorR);
+	    mpm_cluster1=mpm_cluster1.*MASK;
+	    mpm_cluster2=mpm_cluster2.*MASK;
             
             %compute dice coefficent
             num=0;
@@ -128,8 +169,8 @@ function validation_split_half(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_N
                 dice_m(ki)=2*length(find(tmp1.*tmp2>0))/(length(find(tmp1>0))+length(find(tmp2>0)));
             end
             dice(ti,1,kc)=2*num/den;
-            dice_m(isnan(dice_m))=0;
-            dice(ti,2,kc)=mean(dice_m);
+            %dice_m(isnan(dice_m))=0;
+            dice(ti,2,kc)=nanmean(dice_m);
             
             %compute the normalized mutual information and variation of information
             [nminfo(ti,1,kc),nminfo(ti,2,kc),vi(ti,kc)]=my_nmi(mpm_cluster1,mpm_cluster2);
@@ -152,24 +193,24 @@ function validation_split_half(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_N
             fprintf(fp,'%d',kc);
             fprintf(fp,'\n');
             fprintf(fp,'%s','  dice: mean = ');
-            fprintf(fp,'%f  %f',mean(dice(:,2,kc)));
+            fprintf(fp,'%f  %f',nanmean(dice(:,2,kc)));
             fprintf(fp,'%s',' , std = ');
-            fprintf(fp,'%f  %f',std(dice(:,2,kc)));
+            fprintf(fp,'%f  %f',nanstd(dice(:,2,kc)));
             fprintf(fp,'\n');
             fprintf(fp,'%s','  normalized mutual info: mean = ');
-            fprintf(fp,'%f  %f',mean(nminfo(:,1,kc)));
+            fprintf(fp,'%f  %f',nanmean(nminfo(:,1,kc)));
             fprintf(fp,'%s',' , std = ');
-            fprintf(fp,'%f  %f',std(nminfo(:,1,kc)));
+            fprintf(fp,'%f  %f',nanstd(nminfo(:,1,kc)));
             fprintf(fp,'\n');
             fprintf(fp,'%s','  variation of info: mean = ');
-            fprintf(fp,'%f  %f',mean(vi(:,kc)));
+            fprintf(fp,'%f  %f',nanmean(vi(:,kc)));
             fprintf(fp,'%s',' , std = ');
-            fprintf(fp,'%f  %f',std(vi(:,kc)));
+            fprintf(fp,'%f  %f',nanstd(vi(:,kc)));
             fprintf(fp,'\n');
             fprintf(fp,'%s','  cramer V: mean = ');
-            fprintf(fp,'%f  %f',mean(cv(:,1,kc)));
+            fprintf(fp,'%f  %f',nanmean(cv(:,1,kc)));
             fprintf(fp,'%s',' , std = ');
-            fprintf(fp,'%f  %f',std(cv(:,1,kc)));
+            fprintf(fp,'%f  %f',nanstd(cv(:,1,kc)));
             fprintf(fp,'\n');
             fprintf(fp,'\n');
         end
@@ -178,7 +219,7 @@ function validation_split_half(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_N
 
 
 
-function validation_leave_one_out(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,LorR)
+function validation_leave_one_out(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES,LorR)
 
     if LorR == 1
         LR='L';
@@ -193,20 +234,28 @@ function validation_leave_one_out(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_C
         MPM_THRES=0.25;
     end
 
+    GROUP_THRES=GROUP_THRES*100;
+    MASK_FILE=strcat(PWD,'/group_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_',LR,'_roimask_thr',num2str(GROUP_THRES),'.nii');  
+    MASK_NII=load_untouch_nii(MASK_FILE);                                                                                                 
+    MASK=double(MASK_NII.img); 
+
     cv=zeros(sub_num,1,MAX_CL_NUM);
     dice=zeros(sub_num,2,MAX_CL_NUM);
     nminfo=zeros(sub_num,2,MAX_CL_NUM);
     vi=zeros(sub_num,MAX_CL_NUM);
     for kc=2:MAX_CL_NUM
+	display(sprintf('leave_one_out_cluster_%d',kc));
         for ti=1:sub_num
             sub1=sub;
             sub1(ti)=[];
             dice_m=zeros(kc,1);
             
-            vnii_ref_file=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii');
+            vnii_ref_file=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii.gz');
             vnii_ref=load_untouch_nii(vnii_ref_file);
-            mpm_cluster1=vnii_ref.img;
+            mpm_cluster1=double(vnii_ref.img);
             mpm_cluster2=cluster_mpm_validation(PWD,PREFIX,PART,sub1,METHOD,VOX_SIZE,kc,MPM_THRES,LorR);
+	    mpm_cluster1=mpm_cluster1.*MASK;
+	    mpm_cluster2=mpm_cluster2.*MASK;
 
             num=0;
             den=0;
@@ -218,8 +267,8 @@ function validation_leave_one_out(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_C
                 dice_m(ki)=2*length(find(tmp1.*tmp2>0))/(length(find(tmp1>0))+length(find(tmp2>0)));
             end
             dice(ti,1,kc)=2*num/den;
-            dice_m(isnan(dice_m))=0;
-            dice(ti,2,kc)=mean(dice_m);
+            %dice_m(isnan(dice_m))=0;
+            dice(ti,2,kc)=nanmean(dice_m);
 
             %compute the normalized mutual information and variation of information
             [nminfo(ti,1,kc),nminfo(ti,2,kc),vi(ti,kc)]=my_nmi(mpm_cluster1,mpm_cluster2);
@@ -236,14 +285,14 @@ function validation_leave_one_out(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_C
     fp=fopen(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_',LR,'_index_leave_one_out.txt'),'at');
     if fp 
         for kc=2:MAX_CL_NUM
-            fprintf(fp,'clster_num: %d\nmcv: %f, std_cv: %f\nmdice: %f, std_dice: %f\nnmi: %f,std_nmi: %f\nmvi: %f,std_vi: %f\n\n',kc,mean(cv(:,1,kc)),std(cv(:,1,kc)),mean(dice(:,2,kc)),std(dice(:,2,kc)),mean(nminfo(:,1,kc)),std(nminfo(:,1,kc)),mean(vi(:,kc)),std(vi(:,kc)));
+            fprintf(fp,'clster_num: %d\nmcv: %f, std_cv: %f\nmdice: %f, std_dice: %f\nnmi: %f,std_nmi: %f\nmvi: %f,std_vi: %f\n\n',kc,nanmean(cv(:,1,kc)),nanstd(cv(:,1,kc)),nanmean(dice(:,2,kc)),nanstd(dice(:,2,kc)),nanmean(nminfo(:,1,kc)),nanstd(nminfo(:,1,kc)),nanmean(vi(:,kc)),nanstd(vi(:,kc)));
         end
     end
     fclose(fp);
 
 
 
-function validation_pairwise(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,LorR)
+function validation_pairwise(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES,LorR)
 
     if LorR == 1
         LR='L';
@@ -258,19 +307,27 @@ function validation_pairwise(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM
         MPM_THRES=0.25;
     end
 
+    GROUP_THRES=GROUP_THRES*100;
+    MASK_FILE=strcat(PWD,'/group_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_',LR,'_roimask_thr',num2str(GROUP_THRES),'.nii');  
+    MASK_NII=load_untouch_nii(MASK_FILE);                                                                                                 
+    MASK=MASK_NII.img; 
+
     cv=zeros(sub_num,sub_num,MAX_CL_NUM);
     dice=zeros(sub_num,sub_num,MAX_CL_NUM);
     nminfo=zeros(sub_num,sub_num,MAX_CL_NUM);
     vi=zeros(sub_num,sub_num,MAX_CL_NUM);
     for kc=2:MAX_CL_NUM
+	display(sprintf('pairwise_cluster_%d',kc));
         for ti=1:sub_num-1
-            vnii_ref_file=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii');
+            vnii_ref_file=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii.gz');
             vnii_ref=load_untouch_nii(vnii_ref_file);
             mpm_cluster1=vnii_ref.img;
+	    mpm_cluster1=mpm_cluster1.*MASK;
             for tn=ti+1:sub_num
-                vnii_ref1_file=strcat(PWD,'/',sub{tn},'/',PREFIX,'_',sub{tn},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii');
+                vnii_ref1_file=strcat(PWD,'/',sub{tn},'/',PREFIX,'_',sub{tn},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii.gz');
                 vnii_ref1=load_untouch_nii(vnii_ref1_file);
                 mpm_cluster2=vnii_ref1.img;
+	        mpm_cluster2=mpm_cluster2.*MASK;
                 
                 num=0;
                 den=0;
@@ -283,8 +340,8 @@ function validation_pairwise(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM
                     dice_m(ki)=2*length(find(tmp1.*tmp2>0))/(length(find(tmp1>0))+length(find(tmp2>0)));
                 end
                 
-                dice_m(isnan(dice_m))=0;
-                dice(ti,tn,kc)=mean(dice_m);
+                %dice_m(isnan(dice_m))=0;
+                dice(ti,tn,kc)=nanmean(dice_m);
 
                 %compute the normalized mutual information and variation of information
                 [nminfo(ti,tn,kc),minfo,vi(ti,tn,kc)]=my_nmi(mpm_cluster1,mpm_cluster2);               
@@ -310,7 +367,7 @@ function validation_pairwise(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM
             col_nmi=col_nmi(find(col_nmi~=0));
             col_vi=vi(:,:,kc); 
             col_vi=col_vi(find(col_vi~=0)); 
-            fprintf(fp,'cluster_num: %d\nmcv: %f, std_cv: %f\nmdice: %f, std_dice: %f\nnminfo: %f,std_nminfo: %f\nmvi: %f,std_vi: %f\n\n',kc,mean(col_cv),std(col_cv),mean(col_dice),std(col_dice),mean(col_nmi),std(col_nmi),mean(col_vi),std(col_vi));
+            fprintf(fp,'cluster_num: %d\nmcv: %f, std_cv: %f\nmdice: %f, std_dice: %f\nnminfo: %f,std_nminfo: %f\nmvi: %f,std_vi: %f\n\n',kc,nanmean(col_cv),nanstd(col_cv),nanmean(col_dice),nanstd(col_dice),nanmean(col_nmi),nanstd(col_nmi),nanmean(col_vi),nanstd(col_vi));
         end
     end
     fclose(fp);
@@ -330,10 +387,12 @@ function validation_group_cont(PWD,PART,SUB_LIST,VOX_SIZE,MAX_CL_NUM,MPM_THRES,L
         MPM_THRES=0.25;
     end
 
+
     % group-level continuity
     group_cont=zeros(1,MAX_CL_NUM);
     for kc=2:MAX_CL_NUM
-        mpm_file=strcat(PWD,'/MPM_40_',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MPM_thr',num2str(MPM_THRES*100),'_group.nii');
+	display(sprintf('group_cont_cluster_%d',kc));
+        mpm_file=strcat(PWD,'/MPM_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MPM_thr',num2str(MPM_THRES*100),'_group.nii.gz');
         mpm=load_untouch_nii(mpm_file);
         tempimg=double(mpm.img);
         cont=cell(kc,1);
@@ -365,7 +424,8 @@ function validation_group_cont(PWD,PART,SUB_LIST,VOX_SIZE,MAX_CL_NUM,MPM_THRES,L
     end
     fclose(fp);
 
-function validation_indi_cont(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,LorR)
+
+function validation_indi_cont(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES,LorR)
 
     if LorR == 1
         LR='L';
@@ -380,12 +440,19 @@ function validation_indi_cont(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NU
         MPM_THRES=0.25;
     end
 
+    GROUP_THRES=GROUP_THRES*100;
+    MASK_FILE=strcat(PWD,'/group_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_',LR,'_roimask_thr',num2str(GROUP_THRES),'.nii');  
+    MASK_NII=load_untouch_nii(MASK_FILE);                                                                                                 
+    MASK=MASK_NII.img; 
+
     % individual-level continuity
     indi_cont=zeros(MAX_CL_NUM,sub_num);
     for kc=2:MAX_CL_NUM
+	display(sprintf('indi_cont_cluster_%d',kc));
         for ti=1:sub_num
-            nii_file=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii');
+            nii_file=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii.gz');
             nii=load_untouch_nii(nii_file);
+            nii.img=nii.img.*MASK;
             tempimg=double(nii.img);
             cont=cell(kc,1);
             sum=0;
@@ -412,10 +479,122 @@ function validation_indi_cont(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NU
     fp=fopen(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_',LR,'_index_indi_continuity.txt'),'at');
     if fp
         for kc=2:MAX_CL_NUM
-            fprintf(fp,'cluster_num: %d\navg_indi_continuity: %f\nstd_indi_continuity: %f\nmedian_indi_continuity: %f\n\n',kc,mean(indi_cont(kc,:)),std(indi_cont(kc,:)),median(indi_cont(kc,:)));
+            fprintf(fp,'cluster_num: %d\navg_indi_continuity: %f\nstd_indi_continuity: %f\nmedian_indi_continuity: %f\n\n',kc,nanmean(indi_cont(kc,:)),nanstd(indi_cont(kc,:)),nanmedian(indi_cont(kc,:)));
         end
     end
     fclose(fp);
+
+
+function validation_group_silhouette(PWD,PART,SUB_LIST,VOX_SIZE,MAX_CL_NUM,MPM_THRES,LorR)
+
+    if LorR == 1
+        LR='L';
+    elseif LorR == 0
+        LR='R';
+    end
+
+    sub=textread(SUB_LIST,'%s');
+    sub_num=length(sub);
+
+    if ~exist('MPM_THRES','var') | isempty(MPM_THRES)
+        MPM_THRES=0.25;
+    end
+
+
+    % group-level silhouette
+    group_sil=zeros(1,MAX_CL_NUM);
+    for kc=2:MAX_CL_NUM
+	display(sprintf('group_silhouette_cluster_%d',kc));
+        mpm_file=strcat(PWD,'/MPM_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MPM_thr',num2str(MPM_THRES*100),'_group.nii.gz');
+        mpm=load_untouch_nii(mpm_file);
+        tempimg=mpm.img;
+        [xx,yy,zz]=size(tempimg);
+        data=zeros(length(find(tempimg~=0 & ~isnan(tempimg))),4);
+        n=1;
+        for x=1:xx
+            for y=1:yy
+                for z=1:zz
+                    if tempimg(x,y,z)~=0 && ~isnan(tempimg(x,y,z))
+                        data(n,1)=x;data(n,2)=y;data(n,3)=z;data(n,4)=tempimg(x,y,z);
+                        n=n+1;
+                    end
+                end
+            end
+        end
+        coord=data(:,1:3);
+        label=data(:,4);
+        s=silhouette(data,label);
+        %group_sil(1,kc)=mean(s(~isnan(s)));
+        group_sil(1,kc)=nanmean(s);
+    end
+
+
+    if ~exist(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm')) mkdir(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm'));end
+    save(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_',LR,'_index_group_silhouette.mat'),'group_sil');
+
+    fp=fopen(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_',LR,'_index_group_silhouette.txt'),'at');
+    if fp
+        for kc=2:MAX_CL_NUM
+            fprintf(fp,'cluster_num: %d\naverage_group_silhouette: %f\n\n',kc,group_sil(kc));
+        end
+    end
+    fclose(fp);
+
+
+function validation_indi_silhouette(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,LorR)
+
+    if LorR == 1
+        LR='L';
+    elseif LorR == 0
+        LR='R';
+    end
+
+    sub=textread(SUB_LIST,'%s');
+    sub_num=length(sub);
+
+    if ~exist('MPM_THRES','var') | isempty(MPM_THRES)
+        MPM_THRES=0.25;
+    end
+
+    % individual-level silhouette
+    indi_sil=zeros(MAX_CL_NUM,sub_num);
+    for ti=1:sub_num
+        matrix_file=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_',LR,'_matrix/connection_matrix.mat');
+        display(matrix_file);
+
+        load(matrix_file);
+	sum_matrix=sum(matrix,2);
+	matrix=matrix./sum_matrix(:,ones(1,size(matrix,2)));
+        distance=pdist(matrix,'cosine');
+
+        for kc=2:MAX_CL_NUM
+	display(sprintf('indi_silhouette_cluster_%d',kc));
+            nii_file=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_',LR,'_',METHOD,'/',PART,'_',LR,'_',num2str(kc),'.nii');
+            nii=load_untouch_nii(nii_file);
+            tempimg=nii.img;
+            [xx,yy,zz]=size(tempimg);    
+    	    label=zeros(length(xyz),1);
+    	    for n=1:length(xyz)
+    		    label(n,1)=tempimg(xyz(n,1)+1,xyz(n,2)+1,xyz(n,3)+1);
+    	    end
+                s=silhouette([],label,distance);
+                %indi_sil(kc,ti)=mean(s(~isnan(s)));
+                indi_sil(kc,ti)=nanmean(s);
+        end
+    end
+
+
+    if ~exist(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm')) mkdir(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm'));end
+    save(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_',LR,'_index_indi_silhouette.mat'),'indi_sil');
+
+    fp=fopen(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_',LR,'_index_indi_silhouette.txt'),'at');
+    if fp
+        for kc=2:MAX_CL_NUM
+            fprintf(fp,'cluster_num: %d\navg_indi_silhouette: %f\nstd_indi_silhouette: %f\nmedian_indi_silhouette: %f\n\n',kc,nanmean(indi_sil(kc,:)),nanstd(indi_sil(kc,:)),nanmedian(indi_sil(kc,:)));
+        end
+    end
+    fclose(fp);
+
 
 
 function validation_group_hi_vi(PWD,PART,SUB_LIST,VOX_SIZE,MAX_CL_NUM,MPM_THRES,LorR)
@@ -436,10 +615,11 @@ function validation_group_hi_vi(PWD,PART,SUB_LIST,VOX_SIZE,MAX_CL_NUM,MPM_THRES,
     group_hi=zeros(1,MAX_CL_NUM);
     group_vi=zeros(1,MAX_CL_NUM);
     for kc=3:MAX_CL_NUM
-        mpm_file1=strcat(PWD,'/MPM_40_',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc-1),'_MPM_thr',num2str(MPM_THRES*100),'_group.nii');
+	display(sprintf('group_vi_hi_cluster_%d',kc));
+        mpm_file1=strcat(PWD,'/MPM_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc-1),'_MPM_thr',num2str(MPM_THRES*100),'_group.nii.gz');
         mpm1=load_untouch_nii(mpm_file1);
         mpmimg1=mpm1.img;
-        mpm_file2=strcat(PWD,'/MPM_40_',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MPM_thr',num2str(MPM_THRES*100),'_group.nii');
+        mpm_file2=strcat(PWD,'/MPM_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MPM_thr',num2str(MPM_THRES*100),'_group.nii.gz');
         mpm2=load_untouch_nii(mpm_file2);
         mpmimg2=mpm2.img;
 
@@ -453,7 +633,7 @@ function validation_group_hi_vi(PWD,PART,SUB_LIST,VOX_SIZE,MAX_CL_NUM,MPM_THRES,
             end
             xi(i,1) = max(xmatrix(i,:))/sum(xmatrix(i,:));
         end
-        group_hi(1,kc) = mean(xi);
+        group_hi(1,kc) = nanmean(xi);
 
         [nminfo,minfo,group_vi(1,kc)]=my_nmi(mpmimg1,mpmimg2);
     end
@@ -470,7 +650,7 @@ function validation_group_hi_vi(PWD,PART,SUB_LIST,VOX_SIZE,MAX_CL_NUM,MPM_THRES,
     fclose(fp);
 
 
-function validation_indi_hi_vi(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES,LorR)
+function validation_indi_hi_vi(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES,LorR)
 
     if LorR == 1
         LR='L';
@@ -485,16 +665,24 @@ function validation_indi_hi_vi(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_N
         MPM_THRES=0.25;
     end
 
+    GROUP_THRES=GROUP_THRES*100;
+    MASK_FILE=strcat(PWD,'/group_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_',LR,'_roimask_thr',num2str(GROUP_THRES),'.nii');  
+    MASK_NII=load_untouch_nii(MASK_FILE);                                                                                                 
+    MASK=MASK_NII.img; 
+
     indi_hi=zeros(sub_num,MAX_CL_NUM);
     indi_vi=zeros(sub_num,MAX_CL_NUM);
     for kc=3:MAX_CL_NUM
+	display(sprintf('indi_vi_hi_cluster_%d',kc));
         for ti=1:sub_num
-            mpm_file1=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc-1),'_MNI_relabel_group.nii');
+            mpm_file1=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc-1),'_MNI_relabel_group.nii.gz');
             mpm1=load_untouch_nii(mpm_file1);
             mpmimg1=mpm1.img;
-            mpm_file2=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii');
+            mpm_file2=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(kc),'_MNI_relabel_group.nii.gz');
             mpm2=load_untouch_nii(mpm_file2);
             mpmimg2=mpm2.img;
+	    mpmimg1=mpmimg1.*MASK;
+	    mpmimg2=mpmimg2.*MASK;
 
             xmatrix = zeros(kc,kc-1);
             xi = zeros(kc,1);
@@ -506,7 +694,7 @@ function validation_indi_hi_vi(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_N
                 end
                 xi(i,1) = max(xmatrix(i,:))/sum(xmatrix(i,:));
             end
-            indi_hi(ti,kc) = mean(xi);
+            indi_hi(ti,kc) = nanmean(xi);
 
             [nminfo,minfo,indi_vi(ti,kc)]=my_nmi(mpmimg1,mpmimg2);
         end
@@ -518,7 +706,159 @@ function validation_indi_hi_vi(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_N
     fp=fopen(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_',LR,'_index_indi_hi_vi.txt'),'at');
     if fp
         for kc=3:MAX_CL_NUM
-            fprintf(fp,'cluster_num: %d -> %d\navg_indi_hi: %f\nstd_indi_hi: %f\nmedian_indi_hi: %f\navg_indi_vi: %f\nstd_indi_vi: %f\nmedian_indi_vi: %f\n\n',kc-1,kc,mean(indi_hi(:,kc)),std(indi_hi(:,kc)),median(indi_hi(:,kc)),mean(indi_vi(:,kc)),std(indi_vi(:,kc)),median(indi_vi(:,kc)));
+            fprintf(fp,'cluster_num: %d -> %d\navg_indi_hi: %f\nstd_indi_hi: %f\nmedian_indi_hi: %f\navg_indi_vi: %f\nstd_indi_vi: %f\nmedian_indi_vi: %f\n\n',kc-1,kc,nanmean(indi_hi(:,kc)),nanstd(indi_hi(:,kc)),nanmedian(indi_hi(:,kc)),nanmean(indi_vi(:,kc)),nanstd(indi_vi(:,kc)),nanmedian(indi_vi(:,kc)));
+        end
+    end
+    fclose(fp);
+
+
+
+
+function validation_group_tpd(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,MPM_THRES)
+
+    sub=textread(SUB_LIST,'%s');
+    sub_num=length(sub);
+
+    if ~exist('MPM_THRES','var') | isempty(MPM_THRES)
+        MPM_THRES=0.25;
+    end
+
+group_tpd=zeros(1,MAX_CL_NUM);
+for kc=2:MAX_CL_NUM
+	display(sprintf('group_tpd_cluster_%d',kc));
+            mpm_file1=strcat(PWD,'/MPM_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_L_',num2str(kc),'_MPM_thr',num2str(MPM_THRES*100),'_group.nii.gz');
+            mpm1=load_untouch_nii(mpm_file1);
+            img1=mpm1.img;
+            mpm_file2=strcat(PWD,'/MPM_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_R_',num2str(kc),'_MPM_thr',num2str(MPM_THRES*100),'_group.nii.gz');
+            mpm2=load_untouch_nii(mpm_file2);
+            img2=mpm2.img;
+
+se=strel(ones(3,3,3));
+
+for i=1:kc
+    mat{i}=img1;mat{i}(img1~=i)=0;
+end
+con1=zeros(kc,kc);
+for i=1:kc
+    for j=1:kc
+        if i~=j
+            tmp=mat{i};tmp=imdilate(tmp,se);tmp=tmp.*mat{j};con1(j,i)=length(find(tmp~=0));
+        end
+    end
+end
+sum1=sum(con1,2);
+if kc~=2 con1=con1./sum1(:,ones(1,kc));end;
+
+for i=1:kc
+    mat{i}=img2;mat{i}(img2~=i)=0;
+end
+con2=zeros(kc,kc);
+for i=1:kc
+    for j=1:kc
+        if i~=j
+            tmp=mat{i};tmp=imdilate(tmp,se);tmp=tmp.*mat{j};con2(j,i)=length(find(tmp~=0));
+        end
+    end
+end
+sum2=sum(con2,2);
+if kc~=2 con2=con2./sum2(:,ones(1,kc));end
+
+v_con1=reshape(con1',1,[]);
+v_con2=reshape(con2',1,[]);
+group_tpd(1,kc)=pdist([v_con1;v_con2],'cosine');
+
+end
+
+if ~exist(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm')) mkdir(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm'));end
+    save(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_index_group_tpd.mat'),'group_tpd');
+
+    fp=fopen(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_index_group_tpd.txt'),'at');
+    if fp
+        for kc=2:MAX_CL_NUM
+            fprintf(fp,'cluster_num: %d \ngroup_tpd: %f\n\n',kc,group_tpd(1,kc));
+    end
+end
+    fclose(fp);
+
+
+
+function validation_indi_tpd(PWD,PREFIX,PART,SUB_LIST,METHOD,VOX_SIZE,MAX_CL_NUM,GROUP_THRES,MPM_THRES)
+
+
+    sub=textread(SUB_LIST,'%s');
+    sub_num=length(sub);
+
+    if ~exist('MPM_THRES','var') | isempty(MPM_THRES)
+        MPM_THRES=0.25;
+    end
+
+    GROUP_THRES=GROUP_THRES*100;
+
+    MASK_L_FILE=strcat(PWD,'/group_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_L_roimask_thr',num2str(GROUP_THRES),'.nii');  
+    MASK_L_NII=load_untouch_nii(MASK_L_FILE);
+    MASK_L=MASK_L_NII.img; 
+
+    MASK_R_FILE=strcat(PWD,'/group_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_R_roimask_thr',num2str(GROUP_THRES),'.nii');  
+    MASK_R_NII=load_untouch_nii(MASK_R_FILE);
+    MASK_R=MASK_R_NII.img; 
+
+indi_tpd=zeros(sub_num,MAX_CL_NUM);
+for kc=2:MAX_CL_NUM
+	display(sprintf('indi_tpd_cluster_%d',kc));
+        for ti=1:sub_num
+            mpm_file1=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_L_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_L_',num2str(kc),'_MNI_relabel_group.nii.gz');
+            mpm1=load_untouch_nii(mpm_file1);
+            img1=mpm1.img;
+            mpm_file2=strcat(PWD,'/',sub{ti},'/',PREFIX,'_',sub{ti},'_',PART,'_R_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_R_',num2str(kc),'_MNI_relabel_group.nii.gz');
+            mpm2=load_untouch_nii(mpm_file2);
+            img2=mpm2.img;
+	    img1=img1.*MASK_L;
+	    img2=img2.*MASK_R;
+
+se=strel(ones(3,3,3));
+
+for i=1:kc
+    mat{i}=img1;mat{i}(img1~=i)=0;
+end
+con1=zeros(kc,kc);
+for i=1:kc
+    for j=1:kc
+        if i~=j
+            tmp=mat{i};tmp=imdilate(tmp,se);tmp=tmp.*mat{j};con1(j,i)=length(find(tmp~=0));
+        end
+    end
+end
+sum1=sum(con1,2);
+if kc~=2 con1=con1./sum1(:,ones(1,kc));end
+
+for i=1:kc
+    mat{i}=img2;mat{i}(img2~=i)=0;
+end
+con2=zeros(kc,kc);
+for i=1:kc
+    for j=1:kc
+        if i~=j
+            tmp=mat{i};tmp=imdilate(tmp,se);tmp=tmp.*mat{j};con2(j,i)=length(find(tmp~=0));
+        end
+    end
+end
+sum2=sum(con2,2);
+if kc~=2 con2=con2./sum2(:,ones(1,kc));end
+
+v_con1=reshape(con1',1,[]);
+v_con2=reshape(con2',1,[]);
+indi_tpd(ti,kc)=pdist([v_con1;v_con2],'cosine');
+
+end
+end
+
+if ~exist(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm')) mkdir(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm'));end
+    save(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_index_indi_tpd.mat'),'indi_tpd');
+
+    fp=fopen(strcat(PWD,'/validation_',num2str(sub_num),'_',num2str(VOX_SIZE),'mm/',PART,'_index_indi_tpd.txt'),'at');
+    if fp
+        for kc=2:MAX_CL_NUM
+            fprintf(fp,'cluster_num: %d \navg_indi_tpd: %f\nstd_indi_tpd: %f\nmedian_indi_tpd: %f\n\n',kc,nanmean(indi_tpd(:,kc)),nanstd(indi_tpd(:,kc)),nanmedian(indi_tpd(:,kc)));
         end
     end
     fclose(fp);

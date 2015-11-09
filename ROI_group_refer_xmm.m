@@ -23,6 +23,7 @@ function ROI_group_refer_xmm(PWD,PREFIX,PART,SUB_LIST,MAX_CL_NUM,METHOD,VOX_SIZE
 		  disp(strcat(SUB{j},'_',LR));
 		  datanii = load_untouch_nii(strcat(PWD,'/',SUB{j},'/',PREFIX,'_',SUB{j},'_',PART,'_',LR,'_',METHOD,'/',num2str(VOX_SIZE),'mm/',num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(2),'_MNI.nii'));
 		  datanii.img(datanii.img>0) = 1;
+		  datanii.img=single(datanii.img);
 		  sumimg = sumimg + datanii.img;
 	end
 
@@ -42,7 +43,8 @@ function ROI_group_refer_xmm(PWD,PREFIX,PART,SUB_LIST,MAX_CL_NUM,METHOD,VOX_SIZE
 
 
 for CL_NUM=2:MAX_CL_NUM
-if ~exist(strcat(grouproipath,num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(CL_NUM),'_',num2str(GROUP_THRES*100),'_group.nii'))
+%if ~exist(strcat(grouproipath,num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(CL_NUM),'_',num2str(GROUP_THRES*100),'_group.nii'))
+if ~exist(strcat(grouproipath,num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(CL_NUM),'_',num2str(GROUP_THRES*100),'_group.nii.gz'))
     disp(strcat(PART,'_',LR,' cluster number_',num2str(CL_NUM),' is running...'));
     groupmatrix = zeros(ROISIZE,ROISIZE,'uint8');
     for j = 1:length(SUB)
@@ -61,7 +63,7 @@ if ~exist(strcat(grouproipath,num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(CL
     a=1:1:length(index);
     img_f(roiindex(a)) = index(a);
     defnii.img = img_f;
-    save_untouch_nii(defnii,strcat(grouproipath,num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(CL_NUM),'_',num2str(GROUP_THRES*100),'_group.nii'));
+    save_untouch_nii(defnii,strcat(grouproipath,num2str(VOX_SIZE),'mm_',PART,'_',LR,'_',num2str(CL_NUM),'_',num2str(GROUP_THRES*100),'_group.nii.gz'));
 
 	disp(strcat(PART,'_',LR,' cluster number_',num2str(CL_NUM),' Done !!'));
 end

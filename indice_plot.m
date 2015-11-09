@@ -199,25 +199,23 @@ function plot_pairwise(PWD,PART,SUB_LIST,VOX_SIZE,MAX_CL_NUM,LorR)
 	mat_dice=[];
 	mat_nmi=[];
 	mat_vi=[];
+	mask=triu(ones(sub_num),1); % upper triangular part
 	for kc=2:MAX_CL_NUM
 		col_cv=cv(:,:,kc);
-        col_cv=col_cv(find(col_cv~=0));
-        mat_cv=[mat_cv col_cv];
+        mat_cv(:,kc)=col_cv(find(mask));
         col_dice=dice(:,:,kc);
-        col_dice=col_dice(find(col_dice~=0));
-        mat_dice=[mat_dice col_dice];
-        col_nmi=nminfo(:,:,kc); 
-        col_nmi=col_nmi(find(col_nmi~=0));
-        mat_nmi=[mat_nmi col_nmi];
+        mat_dice(:,kc)=col_dice(find(mask));
+        
+        col_nmi=nminfo(:,:,kc);     
+        mat_nmi(:,kc)=col_nmi(find(mask));
         col_vi=vi(:,:,kc); 
-        col_vi=col_vi(find(col_vi~=0));
-        mat_vi=[mat_vi col_vi];
+        mat_vi(:,kc)=col_vi(find(mask));
     end
 
 	hold on;
-	errorbar(x,mean(mat_dice),std(mat_dice),'-r','Marker','*');
-	errorbar(x,mean(mat_nmi),std(mat_nmi),'-b','Marker','*');
-	errorbar(x,mean(mat_cv),std(mat_cv),'-g','Marker','*');
+	errorbar(x,mean(mat_dice(:,2:kc)),std(mat_dice(:,2:kc)),'-r','Marker','*');
+	errorbar(x,mean(mat_nmi(:,2:kc)),std(mat_nmi(:,2:kc)),'-b','Marker','*');
+	errorbar(x,mean(mat_cv(:,2:kc)),std(mat_cv(:,2:kc)),'-g','Marker','*');
 	hold off;
 
 	set(gca,'XTick',x);
@@ -231,7 +229,7 @@ function plot_pairwise(PWD,PART,SUB_LIST,VOX_SIZE,MAX_CL_NUM,LorR)
 	close;
 
 	% VI with non-significant label
-	errorbar(x,mean(mat_vi),std(mat_vi),'-r','Marker','.');
+	errorbar(x,mean(mat_vi(:,2:kc)),std(mat_vi(:,2:kc)),'-r','Marker','.');
 	for k=2:MAX_CL_NUM-1
 		h=ttest2(vi(:,k),vi(:,k+1),0.05,'left');
 		if h==0
